@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>클릭 & 키보드 카운터</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #fff;
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      user-select: none;
+      position: relative;
+    }
+    #counter {
+      font-size: 100px;
+      color: #222;
+    }
+    #speedInfo {
+      position: absolute;
+      right: 10px;
+      bottom: 10px;
+      font-size: 12px;
+      text-align: right;
+      color: #555;
+      line-height: 1.4;
+    }
+  </style>
+</head>
+<body>
+  <div id="counter">0</div>
+  <div id="speedInfo">
+    최근 1초 입력 속도: 0 입력/초<br>
+    평균 입력 속도: 0 입력/초
+  </div>
+
+  <script>
+    let count = 0;
+    const counterElement = document.getElementById('counter');
+    const speedInfo = document.getElementById('speedInfo');
+
+    let firstInputTime = null;
+    let inputTimes = [];
+
+    function registerInput() {
+      const now = Date.now();
+      count++;
+      counterElement.textContent = count;
+
+      if (!firstInputTime) {
+        firstInputTime = now;
+      }
+
+      inputTimes.push(now);
+
+      // 최근 1초 이내 입력만 필터링
+      inputTimes = inputTimes.filter(t => now - t <= 1000);
+      const recentIPS = inputTimes.length;
+
+      const timeSinceFirstInput = (now - firstInputTime) / 1000;
+      const averageIPS = timeSinceFirstInput > 0 ? (count / timeSinceFirstInput).toFixed(2) : 0;
+
+      speedInfo.innerHTML = `
+        최근 1초 입력 속도: ${recentIPS} 입력/초<br>
+        평균 입력 속도: ${averageIPS} 입력/초
+      `;
+    }
+
+    document.body.addEventListener('click', registerInput);
+    document.body.addEventListener('keydown', registerInput);
+  </script>
+</body>
+</html>
